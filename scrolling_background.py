@@ -56,7 +56,9 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.original_image = pygame.image.load("tree.png")
-        self.image = pygame.transform.scale(self.original_image, (42, 70))
+        self.width = 42
+        self.height = 70
+        self.image = pygame.transform.scale(self.original_image, (self.width, self.height))
         self.surf = pygame.Surface((40, 75))
         self.rect = self.surf.get_rect(center=(160, 520))
 
@@ -73,6 +75,13 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right < SCREEN_WIDTH:
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(5, 0)
+
+    def resize(self, scale_factor):
+        """Increase player size by a scale factor."""
+        self.width = int(self.width * scale_factor)
+        self.height = int(self.height * scale_factor)
+        self.image = pygame.transform.scale(self.original_image, (self.width, self.height))
+        self.rect = self.image.get_rect(center=self.rect.center)
 
 
 class Background():
@@ -99,6 +108,8 @@ class Background():
     def render(self):
         DISPLAYSURF.blit(self.bgimage, (self.bgX1, self.bgY1))
         DISPLAYSURF.blit(self.bgimage, (self.bgX2, self.bgY2))
+
+
 
 
 # Setting up Sprites
@@ -165,6 +176,8 @@ while True:
             collided_enemy.kill()
             spawn_enemy()  # Spawn a new enemy immediately after collision
 
+        if (P1.width < 300 and P1.height < 500):
+            P1.resize(scale_factor=1.05)
         #refresh screen
         show_score()
         pygame.display.update()
