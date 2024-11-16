@@ -31,7 +31,9 @@ game_over = font.render("Game Over", True, BLACK)
 # Create a white screen
 DISPLAYSURF = pygame.display.set_mode((400, 600))
 DISPLAYSURF.fill(WHITE)
-pygame.display.set_caption("Game")
+pygame.display.set_caption("Like a Sapling!")
+
+pygame.mouse.set_visible(False)
 
 # Start Screen
 def start_screen():
