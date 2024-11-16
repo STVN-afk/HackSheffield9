@@ -21,14 +21,17 @@ while running:
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("white")
-    pygame.mouse.set_visible(False)
 
     mouse_x,mouse_y = pygame.mouse.get_pos()
     player_pos.x = float(mouse_x)
-
+    pygame.mouse.set_visible(False)
     # RENDER YOUR GAME HERE
-    pygame.draw.rect(screen, RED, (player_pos.x, screen.get_height() / 2 + 100, 50, 100))
+    if player_pos.x > 1230:
+        player_pos.x = 1230.0
+        
+    pygame.draw.rect(screen, RED, (player_pos.x, screen.get_height() / 2, 50, 100))
     print(player_pos.x)
+
 
     # flip() the display to put your work on screen
     pygame.display.flip()
