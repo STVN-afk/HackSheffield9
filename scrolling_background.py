@@ -137,13 +137,9 @@ class Background():
         DISPLAYSURF.blit(self.bgimage, (self.bgX2, self.bgY2))
 
 
-<<<<<<< Updated upstream
-
-
-=======
 def GameLoop():
     global SCORE, SPEED
->>>>>>> Stashed changes
+
 # Setting up Sprites
     P1 = Player()
     E1 = Enemy()
@@ -197,16 +193,13 @@ def GameLoop():
             DISPLAYSURF.blit(entity.image, entity.rect)
             entity.move()
 
-<<<<<<< Updated upstream
-=======
 
         P1.update()
 
->>>>>>> Stashed changes
     # To be run if collision occurs between Player and Enemy
         if pygame.sprite.spritecollideany(P1, enemies):
 
-        #increase player score
+            #increase player score
             score+=10
 
             collided_enemy= pygame.sprite.spritecollideany(P1, enemies)
@@ -214,11 +207,11 @@ def GameLoop():
                 collided_enemy.kill()
                 spawn_enemy()  # Spawn a new enemy immediately after collision
 
-        if (P1.width < 300 and P1.height < 500):
-            P1.resize(scale_factor=1.05)
-        #refresh screen
-            show_score()
-            pygame.display.update()
+            if (P1.width < 300 and P1.height < 500):
+                P1.resize(scale_factor=1.05)
+            #refresh screen
+                show_score()
+                pygame.display.update()
 
         show_score()
         pygame.display.update()
