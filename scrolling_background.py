@@ -37,7 +37,8 @@ pygame.display.set_caption("Game")
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Enemy.png")
+        self.original_image = pygame.image.load("water.png")
+        self.image = pygame.transform.scale(self.original_image, (42, 70))
         self.surf = pygame.Surface((42, 70))
         self.rect = self.surf.get_rect(center=(random.randint(40, SCREEN_WIDTH - 40)
                                                , 0))
@@ -54,7 +55,8 @@ class Enemy(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Player.png")
+        self.original_image = pygame.image.load("tree.png")
+        self.image = pygame.transform.scale(self.original_image, (42, 70))
         self.surf = pygame.Surface((40, 75))
         self.rect = self.surf.get_rect(center=(160, 520))
 
@@ -138,6 +140,7 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
 
     back_ground.update()
     back_ground.render()
