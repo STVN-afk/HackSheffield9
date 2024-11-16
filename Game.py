@@ -85,6 +85,13 @@ all_sprites.add(E1)
 INC_SPEED = pygame.USEREVENT + 1
 pygame.time.set_timer(INC_SPEED, 1000)
 
+score = 0;
+font = pygame.font.SysFont(None, 36);
+
+def show_score():
+    score_surface = font.render("Score: " + str(score), True, BLACK)
+    DISPLAYSURF.blit(score_surface, (10, 10))
+
 #Game Loop
 while True:
       
@@ -109,18 +116,13 @@ while True:
 
     #To be run if collision occurs between Player and Enemy
     if pygame.sprite.spritecollideany(P1, enemies):
-          pygame.mixer.Sound('crash.wav').play()
-          time.sleep(1)
-                   
-          DISPLAYSURF.fill(RED)
-          DISPLAYSURF.blit(game_over, (30,250))
-          
-          pygame.display.update()
-          for entity in all_sprites:
-                entity.kill() 
-          time.sleep(2)
-          pygame.quit()
-          sys.exit()        
+        # Remove collided enemy
+        collided_enemy = pygame.sprite.spritecollideany(P1, enemies)
+        if collided_enemy:
+            collided_enemy.kill()
+
+        pygame.display.update()
+
         
     pygame.display.update()
     FramePerSec.tick(FPS)
