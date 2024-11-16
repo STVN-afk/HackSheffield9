@@ -3,7 +3,7 @@ import pygame
 # project will be Like a Dino! game
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((320, 720))
 clock = pygame.time.Clock()
 running = True
 
@@ -25,11 +25,12 @@ while running:
     mouse_x,mouse_y = pygame.mouse.get_pos()
     player_pos.x = float(mouse_x)
     pygame.mouse.set_visible(False)
-    # RENDER YOUR GAME HERE
-    if player_pos.x > 1230:
-        player_pos.x = 1230.0
-        
-    pygame.draw.rect(screen, RED, (player_pos.x, screen.get_height() / 2, 50, 100))
+
+    # Stops rectangle from going out of screen
+    if player_pos.x >= float(screen.get_width() - 50):
+        player_pos.x = float(screen.get_width()) - 50
+
+    pygame.draw.rect(screen, RED, (player_pos.x, screen.get_height() / 2 + 100, 50, 100))
     print(player_pos.x)
 
 
