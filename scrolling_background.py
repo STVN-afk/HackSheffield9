@@ -104,7 +104,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.move_ip(5, 0)
 
     def resize(self, scale_factor):
-        """Increase player size by a scale factor."""
+        #Increase player size by a defined scale factor
         self.width = int(self.width * scale_factor)
         self.height = int(self.height * scale_factor)
         self.image = pygame.transform.scale(self.original_image, (self.width, self.height))
