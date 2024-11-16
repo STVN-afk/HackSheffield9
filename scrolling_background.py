@@ -31,7 +31,9 @@ game_over = font.render("Game Over", True, BLACK)
 # Create a white screen
 DISPLAYSURF = pygame.display.set_mode((400, 600))
 DISPLAYSURF.fill(WHITE)
-pygame.display.set_caption("Game")
+pygame.display.set_caption("Like a Sapling!")
+
+pygame.mouse.set_visible(False)
 
 # Start Screen
 def start_screen():
@@ -44,11 +46,11 @@ def start_screen():
                 if event.button == 1:  # Left mouse button click
                     return  # Start the game loop
 
-        DISPLAYSURF.fill(WHITE)  # Fill the screen with white
-        title_text = font.render("Like a Sapling!", True, GREEN)
+        DISPLAYSURF.fill((168, 220, 171)) # Fill the screen with green
+        title_text = font_small.render("Like a Sapling!", True, "#4e664f")
         instructions_text = font_small.render("Click to Start", True, BLACK)
 
-        title_x = (SCREEN_WIDTH - title_text.get_width()) // 2
+        title_x = (SCREEN_WIDTH - title_text.get_width()) // 2 
         title_y = SCREEN_HEIGHT // 5  # Top part of the screen
         DISPLAYSURF.blit(title_text, (title_x, title_y))
 
@@ -57,7 +59,7 @@ def start_screen():
         DISPLAYSURF.blit(instructions_text, (instructions_x, instructions_y))
 
 
-    pygame.display.update()  # Update the screen
+        pygame.display.update()  # Update the screen
 
 
 
