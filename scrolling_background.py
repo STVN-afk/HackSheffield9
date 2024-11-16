@@ -117,6 +117,11 @@ class Player(pygame.sprite.Sprite):
         mouse_x, mouse_y = pygame.mouse.get_pos()
         self.rect.center = (mouse_x, 520)
 
+    def checkClick(self):
+        return pygame.mouse.get_pressed()[0] == 1  # Check if left mouse button is pressed
+
+
+
 
 
 class Background():
@@ -206,20 +211,19 @@ def GameLoop():
 
     # To be run if collision occurs between Player and Enemy
         if pygame.sprite.spritecollideany(P1, enemies):
+            collided_enemy = pygame.sprite.spritecollideany(P1, enemies)
 
-            #increase player score
-            score+=10
+            # Checks if collision and user has clicked
+            if collided_enemy and P1.checkClick():
+                    score += 1
+                    if (P1.width < 300 and P1.height < 500):
+                        P1.resize(scale_factor=1.02)
 
-            collided_enemy= pygame.sprite.spritecollideany(P1, enemies)
-            if collided_enemy:
-                collided_enemy.kill()
-                spawn_enemy()  # Spawn a new enemy immediately after collision
 
-            if (P1.width < 300 and P1.height < 500):
-                P1.resize(scale_factor=1.05)
+    
             #refresh screen
-                show_score()
-                pygame.display.update()
+            show_score()
+            pygame.display.update()
 
         show_score()
         pygame.display.update()
