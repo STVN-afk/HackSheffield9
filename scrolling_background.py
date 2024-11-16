@@ -31,7 +31,10 @@ game_over = font.render("Game Over", True, BLACK)
 # Create a white screen
 DISPLAYSURF = pygame.display.set_mode((400, 600))
 DISPLAYSURF.fill(WHITE)
-pygame.display.set_caption("Game")
+pygame.display.set_caption("Like a Sapling!")
+
+# Hide Mouse 
+pygame.mouse.set_visible(False)
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -40,8 +43,9 @@ class Enemy(pygame.sprite.Sprite):
         self.original_image = pygame.image.load("water.png")
         self.image = pygame.transform.scale(self.original_image, (42, 70))
         self.surf = pygame.Surface((42, 70))
-        self.rect = self.surf.get_rect(center=(random.randint(40, SCREEN_WIDTH - 40)
-                                               , 0))
+        self.rect = self.surf.get_rect(center=(random.randint(40, SCREEN_WIDTH - 40), 0))
+        
+        
 
     def move(self):
         global SCORE
@@ -74,10 +78,14 @@ class Player(pygame.sprite.Sprite):
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(5, 0)
 
+    def update(self):
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        self.rect.center = (mouse_x, 520)  # Update the player's position to the mouse coordinates
+
 
 class Background():
     def __init__(self):
-        self.bgimage = pygame.image.load('AnimatedStreet.png')
+        self.bgimage = pygame.image.load('Background.png')
         self.rectBGimg = self.bgimage.get_rect()
 
         self.bgY1 = 0
@@ -153,6 +161,9 @@ while True:
     for entity in all_sprites:
         DISPLAYSURF.blit(entity.image, entity.rect)
         entity.move()
+
+
+    P1.update()
 
     # To be run if collision occurs between Player and Enemy
     if pygame.sprite.spritecollideany(P1, enemies):
