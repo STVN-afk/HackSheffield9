@@ -110,6 +110,11 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.original_image, (self.width, self.height))
         self.rect = self.image.get_rect(center=self.rect.center)
 
+    def update(self):
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        self.rect.center = (mouse_x, 520)
+
+
 
 class Background():
     def __init__(self):
