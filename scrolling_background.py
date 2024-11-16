@@ -88,6 +88,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.original_image, (self.width, self.height))
         self.surf = pygame.Surface((40, 75))
         self.rect = self.surf.get_rect(center=(160, 520))
+        self.rect = self.image.get_rect(midbottom=(160, SCREEN_HEIGHT))
 
     def move(self):
         pressed_keys = pygame.key.get_pressed()
