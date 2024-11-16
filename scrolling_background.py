@@ -121,7 +121,11 @@ class Player(pygame.sprite.Sprite):
 
 class Background():
     def __init__(self):
-        self.bgimage = pygame.image.load('AnimatedStreet.png')
+        # Load and scale the background image
+        self.bgimage = pygame.image.load('Background.png')  # Replace with your image path
+        self.bgimage = pygame.transform.scale(self.bgimage, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Resize to fit screen
+
+        # Get the rect (size) of the background image
         self.rectBGimg = self.bgimage.get_rect()
 
         self.bgY1 = 0
@@ -130,7 +134,7 @@ class Background():
         self.bgY2 = self.rectBGimg.height
         self.bgX2 = 0
 
-        self.movingUpSpeed = 5
+        self.movingUpSpeed = 0
 
     def update(self):
         self.bgY1 -= self.movingUpSpeed
