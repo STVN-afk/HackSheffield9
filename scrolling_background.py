@@ -42,6 +42,9 @@ pygame.mixer.music.play()  # Loop the music indefinitely
 click_sound = pygame.mixer.Sound("Click.mp3")  # Replace with your sound effect file
 click_sound.set_volume(1.0)  # Set volume (0.0 to 1.0)
 
+gainDrops = pygame.mixer.Sound("GainDrop.mp3")
+gainDrops.set_volume(0.1) 
+
 # Start Screen
 def start_screen():
     while True:
@@ -71,7 +74,6 @@ def start_screen():
         description_x = (SCREEN_WIDTH - description_text.get_width()) // 2
         description_y = SCREEN_HEIGHT // 3  # Center of the screen
         DISPLAYSURF.blit(description_text, (description_x, description_y))
-  
 
         pygame.display.update()  # Update the screen
 
@@ -105,7 +107,6 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.top_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT ))
         self.collision_rect = self.top_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT))
         self.segments = []  # To store tree_middle.png images
-
 
         self.start_time = None  # To store the time when the move starts
         self.moving_up = False  # Flag to indicate if the movement is active
@@ -175,6 +176,7 @@ class Player(pygame.sprite.Sprite):
             surface.blit(segment_image, segment_rect)
         # Draw the tree top
         surface.blit(self.top_image, self.rect)
+        self.draw_outline(surface)
         
 
 
@@ -324,6 +326,7 @@ def GameLoop():
         # Check collisions
         collected = pygame.sprite.spritecollide(P1, raindropsCollection, True, collided=custom_collide)
         if collected:
+                gainDrops.play()
                 score += len(collected)
                 for _ in collected:
                     P1.grow()  # Add a segment for each collected item
