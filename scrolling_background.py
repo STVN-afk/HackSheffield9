@@ -63,34 +63,36 @@ def start_screen():
 
 
 
-class Enemy(pygame.sprite.Sprite):
+class Raindrops(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.original_image = pygame.image.load("water.png")
         self.image = pygame.transform.scale(self.original_image, (42, 70))
         self.surf = pygame.Surface((42, 70))
-        self.rect = self.surf.get_rect(center=(random.randint(40, SCREEN_WIDTH - 40)
-                                               , 0))
+        self.collision_rect = self.surf.get_rect(center=(random.randint(40, SCREEN_WIDTH - 40), 0))
 
-    def move(self):
-        global SCORE
-        self.rect.move_ip(0, SPEED)
-        if (self.rect.top > 600):
-            SCORE += 1
-            self.rect.top = 0
-            self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
+    def fall(self):
+        self.collision_rect.move_ip(0, SPEED)
+        if self.collision_rect.top > 510:
+            self.kill()
+            return True
+        return False
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.original_image = pygame.image.load("tree.png")
-        self.width = 42
-        self.height = 70
-        self.image = pygame.transform.scale(self.original_image, (self.width, self.height))
-        self.surf = pygame.Surface((40, 75))
-        self.rect = self.surf.get_rect(center=(160, 520))
-        self.rect = self.image.get_rect(midbottom=(160, SCREEN_HEIGHT))
+        self.original_image = pygame.image.load("tree_top.png")
+        self.top_image = pygame.transform.scale(self.original_image, (150, 150))  # Scale the image
+        self.rect = self.top_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT ))
+        self.collision_rect = self.top_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT))
+        self.segments = []  # To store tree_middle.png images
+
+        self.collision_rect.width = 30
+        self.collision_rect.height = 50
+        self.start_time = None  # To store the time when the move starts
+        self.moving_up = False  # Flag to indicate if the movement is active
+
 
     def move(self):
         pressed_keys = pygame.key.get_pressed()
@@ -106,19 +108,83 @@ class Player(pygame.sprite.Sprite):
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(5, 0)
 
-    def resize(self, scale_factor):
-        #Increase player size by a defined scale factor
-        self.width = int(self.width * scale_factor)
-        self.height = int(self.height * scale_factor)
-        self.image = pygame.transform.scale(self.original_image, (self.width, self.height))
-        self.rect = self.image.get_rect(center=self.rect.center)
+    def grow(self):
+        # Load and scale the tree_middle.png image
+        segment_image = pygame.image.load('tree_middle.png').convert_alpha()
+        segment_image = pygame.transform.scale(segment_image, (150,150))
+
+
+        if self.segments:
+            # Place the new segment below the last segment
+            last_segment_rect = self.segments[-1][1]
+            new_segment_rect = segment_image.get_rect(midbottom=(SCREEN_WIDTH // 2 , last_segment_rect.bottom + 40))
+        else:
+            # Place the first segment directly below the tree top
+            new_segment_rect = segment_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT))
+
+        self.segments.append((segment_image, new_segment_rect))
+
 
     def update(self):
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        self.rect.center = (mouse_x, 520)
+        mouse_x, _ = pygame.mouse.get_pos()
+        self.collision_rect.centerx = mouse_x  # Keep the tree top moving with the mouse
+        self.rect.centerx = mouse_x
+
+        # Align all segments to the x-coordinate of the tree top
+        for i, (image, segment_rect) in enumerate(self.segments):
+            # Move the segment to match the tree top's x-position
+            new_x = self.rect.centerx - segment_rect.width // 2
+            self.segments[i] = (image, segment_rect.move(new_x - segment_rect.x, 0))
+
+
 
     def checkClick(self):
         return pygame.mouse.get_pressed()[0] == 1  # Check if left mouse button is pressed
+    
+    def draw_outline(self, surface):
+        # Draw the outline for the top tree part (player's main rectangle)
+        pygame.draw.rect(surface, RED, self.collision_rect, 3)  # 3 is the thickness of the outline
+
+
+        # Draw outlines for each tree segment
+        for segment_image, segment_rect in self.segments:
+            pygame.draw.rect(surface, RED, segment_rect, 3)  # Outline the segment rectangles
+
+    
+    def draw(self, surface):
+        # Draw all tree segments first
+        for segment_image, segment_rect in self.segments:
+            surface.blit(segment_image, segment_rect)
+        # Draw the tree top
+        surface.blit(self.top_image, self.rect)
+        
+
+        self.draw_outline(surface)
+
+    def move_up(self):
+        """ Move the tree upwards, including all segments """
+        if self.moving_up:
+            elapsed_time = pygame.time.get_ticks() - self.start_time
+
+            # Move upwards as long as 5 seconds haven't passed
+            if elapsed_time < 5000:
+                self.rect.y -= 1  # Move P1 upwards by 1 pixel (you can adjust this speed)
+                for i, (segment_image, segment_rect) in enumerate(self.segments):
+                    self.segments[i] = (segment_image, segment_rect.move(0, -1))  # Move each segment upwards by 1 pixel
+            else:
+                self.moving_up = False  # Stop moving after 5 seconds
+
+    def start_moving_up(self):
+        """Start the upward movement"""
+        self.start_time = pygame.time.get_ticks()  # Record the start time
+        self.moving_up = True  # Set flag to start moving upwards
+
+    def getSegments(self):
+        return self.segments
+    
+
+
+
 
 
 
@@ -153,34 +219,45 @@ class Background():
         DISPLAYSURF.blit(self.bgimage, (self.bgX1, self.bgY1))
         DISPLAYSURF.blit(self.bgimage, (self.bgX2, self.bgY2))
 
+def GameOver(score,width,height):
+    game_over_text = font.render("Game Over", True, BLACK)
+    score_text = font.render(f"Score: {score}", True, BLACK)
+    DISPLAYSURF.blit(game_over_text, (width // 4, height // 3))
+    DISPLAYSURF.blit(score_text, (width // 4, height // 2))
+    pygame.display.update()
+    pygame.time.wait(2000)
+
 
 def GameLoop():
-    global SCORE, SPEED
+    global SCORE, SPEED, SPAWN_TIMER
+
+    spawn_interval = 1000  # Start with 1000 ms (1 second)
+    spawn_time = 0  # Timer for decrement every 3 seconds
 
 # Setting up Sprites
     P1 = Player()
-    E1 = Enemy()
+    #E1 = Raindrops()
 
     back_ground = Background()
 
 # Creating Sprites Groups
-    enemies = pygame.sprite.Group()
-    enemies.add(E1)
+    raindropsCollection = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(P1)
-    all_sprites.add(E1)
+    #all_sprites.add(E1)
 
 # Adding a new User event
     INC_SPEED = pygame.USEREVENT + 1
-    pygame.time.set_timer(INC_SPEED, 1000)
+    SPAWN_ENEMY = pygame.USEREVENT + 2
+    DECREMENT_TIMER = pygame.USEREVENT + 3 # Custom event for timer decrement
+    pygame.time.set_timer(INC_SPEED, 3000)  # Increase speed every 3 seconds
+    pygame.time.set_timer(DECREMENT_TIMER, 2000)
+    pygame.time.set_timer(SPAWN_ENEMY, spawn_interval)  # Spawn enemies every second
+
 
     score = 0;
     font = pygame.font.SysFont(None, 36);
-
-    def spawn_enemy():
-        new_enemy = Enemy()
-        enemies.add(new_enemy)
-        all_sprites.add(new_enemy)
+    missed = 0
 
     def show_score():
         score_surface = font.render("Score: " + str(score), True, BLACK)
@@ -192,42 +269,79 @@ def GameLoop():
     # Cycles through all occurring events
         for event in pygame.event.get():
             if event.type == INC_SPEED:
-                SPEED += 0.0
+                SPEED += 1
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == SPAWN_ENEMY:
+                new_raindrop = Raindrops()
+                raindropsCollection.add(new_raindrop)
+                all_sprites.add(new_raindrop)
+            if event.type == DECREMENT_TIMER:
+                spawn_interval = max(400, spawn_interval - 50)  # Prevent the interval from going below 200ms
+                print(spawn_interval)
+                pygame.time.set_timer(SPAWN_ENEMY, spawn_interval)  # Update the spawn interval
 
+        for entity in all_sprites:
+            if isinstance(entity, Raindrops):
+                if entity.fall() and P1.checkClick() == False:
+                    missed += 1  # Increase missed count if collectible goes off-screen
+        
+
+        # Define a custom collide function that checks collisions against P1.collision_rect
+        def custom_collide(raindrop_sprite, p1_sprite):
+        # This assumes raindrop_sprite is a sprite in raindropsCollection and has a rect
+            return raindrop_sprite.rect.colliderect(p1_sprite.collision_rect)
+        
+        # Check collisions
+        collected = pygame.sprite.spritecollide(P1, raindropsCollection, True, collided=custom_collide)
+        if collected and P1.checkClick():
+            score += len(collected)
+            for _ in collected:
+                P1.grow()  # Add a segment for each collected item
+
+        if missed >= 5:
+            
+            game_over_text = font.render("Game Over", True, BLACK)
+            score_text = font.render(f"Score: {score}", True, BLACK)
+            DISPLAYSURF.blit(game_over_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+            DISPLAYSURF.blit(score_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
+
+            # Start moving P1 upwards for 5 seconds
+            P1.start_moving_up()
+
+            # Wait for 5 seconds while moving P1 and segments up
+            while pygame.time.get_ticks() - P1.start_time < 5000:
+                P1.move_up()  # Update P1 and its movement
+                DISPLAYSURF.fill((255, 255, 255))  # Clear screen
+                P1.draw(DISPLAYSURF)  # Draw P1 and its segments
+                pygame.display.update()
+                pygame.time.Clock().tick(60)  # Cap the frame rate
+
+            break  # Exit the game loop after 5 seconds of movement
+
+            # Update the game display
+            pygame.display.update()
+
+            # Control the frame rate
+            pygame.time.Clock().tick(60)
+
+            pygame.quit()
 
         back_ground.update()
         back_ground.render()
 
-        # DISPLAYSURF.blit(background, (0,0))
+        # Display Scores 
         scores = font_small.render(str(SCORE), True, BLACK)
+        missed_text = font.render(f"Missed: {missed}", True, BLACK)
         DISPLAYSURF.blit(scores, (10, 10))
-
-    # Moves and Re-draws all Sprites
-        for entity in all_sprites:
-            DISPLAYSURF.blit(entity.image, entity.rect)
-            entity.move()
-
+        DISPLAYSURF.blit(missed_text, (10, 50))
 
         P1.update()
+        P1.draw(DISPLAYSURF)
 
-    # To be run if collision occurs between Player and Enemy
-        if pygame.sprite.spritecollideany(P1, enemies):
-            collided_enemy = pygame.sprite.spritecollideany(P1, enemies)
-
-            # Checks if collision and user has clicked
-            if collided_enemy and P1.checkClick():
-                    score += 1
-                    if (P1.width < 300 and P1.height < 500):
-                        P1.resize(scale_factor=1.02)
-
-
-    
-            #refresh screen
-            show_score()
-            pygame.display.update()
+        for raindrop in raindropsCollection:
+            DISPLAYSURF.blit(raindrop.image, raindrop.collision_rect)
 
         show_score()
         pygame.display.update()
