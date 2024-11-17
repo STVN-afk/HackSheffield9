@@ -230,14 +230,6 @@ class Player(pygame.sprite.Sprite):
             new_segment_rect = segment_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 57))
 
         self.segments.append((segment_image, new_segment_rect))
-    
-
-
-
-
-
-
-
 
 class Background():
     def __init__(self):
@@ -255,14 +247,6 @@ class Background():
         self.bgX2 = 0
 
         self.movingUpSpeed = 0
-
-    def update(self):
-        self.bgY1 -= self.movingUpSpeed
-        self.bgY2 -= self.movingUpSpeed
-        if self.bgY1 <= -self.rectBGimg.height:
-            self.bgY1 = self.rectBGimg.height
-        if self.bgY2 <= -self.rectBGimg.height:
-            self.bgY2 = self.rectBGimg.height
 
     def render(self):
         DISPLAYSURF.blit(self.bgimage, (self.bgX1, self.bgY1))
@@ -380,15 +364,6 @@ def GameLoop():
 
             break  # Exit the game loop after 5 seconds of movement
 
-            # Update the game display
-            pygame.display.update()
-
-            # Control the frame rate
-            pygame.time.Clock().tick(60)
-
-            pygame.quit()
-
-        back_ground.update()
         back_ground.render()
 
         # Display Scores 
