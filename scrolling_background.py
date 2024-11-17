@@ -35,6 +35,13 @@ pygame.display.set_caption("Like a Sapling!")
 
 pygame.mouse.set_visible(False)
 
+pygame.mixer.music.load("StartMusic.mp3")
+pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
+pygame.mixer.music.play()  # Loop the music indefinitely
+
+click_sound = pygame.mixer.Sound("Click.mp3")  # Replace with your sound effect file
+click_sound.set_volume(1.0)  # Set volume (0.0 to 1.0)
+
 # Start Screen
 def start_screen():
     while True:
@@ -44,6 +51,8 @@ def start_screen():
                 sys.exit()
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button click
+                    pygame.mixer.music.stop()  # Loop the music indefinitely
+                    click_sound.play()
                     return  # Start the game loop
 
         DISPLAYSURF.fill((168, 220, 171)) # Fill the screen with green
@@ -62,7 +71,7 @@ def start_screen():
         description_x = (SCREEN_WIDTH - description_text.get_width()) // 2
         description_y = SCREEN_HEIGHT // 3  # Center of the screen
         DISPLAYSURF.blit(description_text, (description_x, description_y))
-
+  
 
         pygame.display.update()  # Update the screen
 
