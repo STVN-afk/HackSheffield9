@@ -48,6 +48,7 @@ def start_screen():
 
         DISPLAYSURF.fill((168, 220, 171)) # Fill the screen with green
         title_text = font_small.render("Like a Sapling!", True, "#4e664f")
+        description_text = font_small.render("Collect Raindrops to Grow!", True, BLACK)
         instructions_text = font_small.render("Click to Start", True, BLACK)
 
         title_x = (SCREEN_WIDTH - title_text.get_width()) // 2 
@@ -57,6 +58,10 @@ def start_screen():
         instructions_x = (SCREEN_WIDTH - instructions_text.get_width()) // 2
         instructions_y = SCREEN_HEIGHT // 2  # Center of the screen
         DISPLAYSURF.blit(instructions_text, (instructions_x, instructions_y))
+
+        description_x = (SCREEN_WIDTH - description_text.get_width()) // 2
+        description_y = SCREEN_HEIGHT // 3  # Center of the screen
+        DISPLAYSURF.blit(description_text, (description_x, description_y))
 
 
         pygame.display.update()  # Update the screen
@@ -68,8 +73,8 @@ class Raindrops(pygame.sprite.Sprite):
         super().__init__()
         self.original_image = pygame.image.load("water.png")
         self.image = pygame.transform.scale(self.original_image, (42, 70))
-        self.surf = pygame.Surface((42, 70))
-        self.collision_rect = self.surf.get_rect(center=(random.randint(40, SCREEN_WIDTH - 40), 0))
+        self.collision_rect = self.image.get_rect()
+        self.collision_rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)  # Initialize the position
         self.missed = False
 
     def fall(self):
@@ -92,8 +97,7 @@ class Player(pygame.sprite.Sprite):
         self.collision_rect = self.top_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT))
         self.segments = []  # To store tree_middle.png images
 
-        self.collision_rect.width = 30
-        self.collision_rect.height = 50
+
         self.start_time = None  # To store the time when the move starts
         self.moving_up = False  # Flag to indicate if the movement is active
 
@@ -124,15 +128,16 @@ class Player(pygame.sprite.Sprite):
             new_segment_rect = segment_image.get_rect(midbottom=(SCREEN_WIDTH // 2 , last_segment_rect.bottom + 40))
         else:
             # Place the first segment directly below the tree top
-            new_segment_rect = segment_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT))
+            new_segment_rect = segment_image.get_rect(midbottom=(SCREEN_WIDTH // 2 , SCREEN_HEIGHT))
 
         self.segments.append((segment_image, new_segment_rect))
 
 
     def update(self):
         mouse_x, _ = pygame.mouse.get_pos()
-        self.collision_rect.centerx = mouse_x  # Keep the tree top moving with the mouse
         self.rect.centerx = mouse_x
+
+
 
         # Align all segments to the x-coordinate of the tree top
         for i, (image, segment_rect) in enumerate(self.segments):
@@ -147,7 +152,7 @@ class Player(pygame.sprite.Sprite):
     
     def draw_outline(self, surface):
         # Draw the outline for the top tree part (player's main rectangle)
-        pygame.draw.rect(surface, RED, self.collision_rect, 3)  # 3 is the thickness of the outline
+        pygame.draw.rect(surface, RED, self.rect, 3)  # 3 is the thickness of the outline
 
 
         # Draw outlines for each tree segment
@@ -174,9 +179,9 @@ class Player(pygame.sprite.Sprite):
             if elapsed_time < 5000:
                 x = round(score / 10)
 
-                self.rect.y -= x  # Move P1 upwards by 2
+                self.rect.y -= x*2 # Move P1 upwards by 2
                 for i, (segment_image, segment_rect) in enumerate(self.segments):
-                    self.segments[i] = (segment_image, segment_rect.move(0, -x))  
+                    self.segments[i] = (segment_image, segment_rect.move(0, -x*2))  
             else:
                 self.moving_up = False  # Stop moving after 5 seconds
 
@@ -201,7 +206,6 @@ class Player(pygame.sprite.Sprite):
             new_segment_rect = segment_image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 57))
 
         self.segments.append((segment_image, new_segment_rect))
-
     
 
 
@@ -307,12 +311,14 @@ def GameLoop():
         # This assumes raindrop_sprite is a sprite in raindropsCollection and has a rect
             return raindrop_sprite.rect.colliderect(p1_sprite.collision_rect)
         
+        
         # Check collisions
         collected = pygame.sprite.spritecollide(P1, raindropsCollection, True, collided=custom_collide)
         if collected:
-            score += len(collected)
-            for _ in collected:
-                P1.grow()  # Add a segment for each collected item
+                score += len(collected)
+                for _ in collected:
+                    P1.grow()  # Add a segment for each collected item
+
 
 
         if missed >= 5:
