@@ -6,6 +6,7 @@ import random, time
 # Initializing
 pygame.init()
 
+
 # Setting up FPS
 FPS = 60
 FramePerSec = pygame.time.Clock()
