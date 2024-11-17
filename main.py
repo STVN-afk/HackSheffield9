@@ -5,7 +5,8 @@ import pygame
 pygame.init()
 screen = pygame.display.set_mode((320, 720))
 clock = pygame.time.Clock()
-pygame.mixer.music.load("Attack on Titan ⧸ Shingeki no Kyojin Opening - Guren no Yumiya 8-bit and 16-bit Remix.mp3")
+pygame.mixer.music.load(
+    "music/Attack on Titan ⧸ Shingeki no Kyojin Opening - Guren no Yumiya 8-bit and 16-bit Remix.mp3")
 pygame.mixer.music.play()
 
 running = True

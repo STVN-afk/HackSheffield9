@@ -1,4 +1,5 @@
 # Imports
+import os
 import pygame, sys
 from pygame.locals import *
 import random, time
@@ -40,7 +41,21 @@ click_sound = pygame.mixer.Sound("Click.mp3")  # Replace with your sound effect 
 click_sound.set_volume(1.0)  # Set volume (0.0 to 1.0)
 
 gainDrops = pygame.mixer.Sound("GainDrop.mp3")
-gainDrops.set_volume(0.1) 
+gainDrops.set_volume(0.1)
+
+def list_mp3_files(directory):
+    """Returns a list of .mp3 files from the specified directory."""
+    return [file for file in os.listdir(directory) if file.endswith('.mp3')]
+
+# Specify the directory containing your .mp3 files
+directory_path = 'G:\My Drive\YEAR 2\Hackathon\HackSheffield9\music'  # Replace with your directory path
+
+# Get the list of .mp3 files
+mp3_files = list_mp3_files(directory_path)
+
+print(mp3_files)
+
+
 
 # Start Screen
 def start_screen():
@@ -258,7 +273,10 @@ class Background():
 
 
 def GameLoop():
-    pygame.mixer.music.load("Attack on Titan ⧸ Shingeki no Kyojin Opening - Guren no Yumiya 8-bit and 16-bit Remix.mp3")
+    randSong = random.randint(0, len(mp3_files) - 1)
+    chosenSong = mp3_files[randSong]
+    print(randSong)
+    pygame.mixer.music.load("music/" + chosenSong)
     pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
     pygame.mixer.music.play()  # Loop the music indefinitely
     global SCORE, SPEED, SPAWN_TIMER
