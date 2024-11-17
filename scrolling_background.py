@@ -6,6 +6,7 @@ import random, time
 # Initializing
 pygame.init()
 
+
 # Setting up FPS
 FPS = 60
 FramePerSec = pygame.time.Clock()
@@ -35,10 +36,6 @@ pygame.display.set_caption("Like a Sapling!")
 
 pygame.mouse.set_visible(False)
 
-pygame.mixer.music.load("StartMusic.mp3")
-pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
-pygame.mixer.music.play()  # Loop the music indefinitely
-
 click_sound = pygame.mixer.Sound("Click.mp3")  # Replace with your sound effect file
 click_sound.set_volume(1.0)  # Set volume (0.0 to 1.0)
 
@@ -47,6 +44,9 @@ gainDrops.set_volume(0.1)
 
 # Start Screen
 def start_screen():
+    pygame.mixer.music.load("StartMusic.mp3")
+    pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
+    pygame.mixer.music.play()  # Loop the music indefinitely
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -258,6 +258,9 @@ class Background():
 
 
 def GameLoop():
+    pygame.mixer.music.load("Attack on Titan ⧸ Shingeki no Kyojin Opening - Guren no Yumiya 8-bit and 16-bit Remix.mp3")
+    pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
+    pygame.mixer.music.play()  # Loop the music indefinitely
     global SCORE, SPEED, SPAWN_TIMER
 
     spawn_interval = 1000  # Start with 1000 ms (1 second)
