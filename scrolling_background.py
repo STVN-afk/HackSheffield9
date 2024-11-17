@@ -191,8 +191,6 @@ class Player(pygame.sprite.Sprite):
             surface.blit(segment_image, segment_rect)
         # Draw the tree top
         surface.blit(self.top_image, self.rect)
-        self.draw_outline(surface)
-        
 
 
     def move_up(self,score):
